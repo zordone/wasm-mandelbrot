@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Fractal Test</title>        
+        <style>
+            body {
+                background-color: gray;
+            }
+            canvas {
+                border: 1px solid red;
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="plot" width="1250" height="800"></canvas>
+        <!-- 
+            Parameters
+            If you change width or height, you'll need to update some of the C/C++ sources too, 
+            since some of the the memory allocation code is hardcoded at the moment. 
+        -->
+        <script>
+            const WIDTH = 1250,
+                  HEIGHT = 800,
+                  ITERATIONS = 120,
+                  LIMIT = 10,                   
+                  ZOOM = 2000.0,
+                  PAN_X = 1.4,
+                  PAN_Y = 0.55;               
+        </script>
+        
+        <!-- The Emscripten generated JavaScript wrapper for out WASM module -->
+        <script src="mandelbrot.js"></script>
+                
+        <!-- C++ version with its own one-time allocation and using bind to return results to JavaScript  -->
+        <script>
+            Module.addOnPostRun(() => {
+                const ctx = document.getElementById('plot').getContext('2d'),
+                      ctxImageData = ctx.getImageData(0,0, WIDTH, HEIGHT);
+
+                // render
+                function render() {                    
+                    console.time('render');
+                    const mandelbrot = Module.mandelbrot(WIDTH, HEIGHT, ITERATIONS, LIMIT, ZOOM, PAN_X, PAN_Y);
+                    ctxImageData.data.set(mandelbrot);
+                    ctx.putImageData(ctxImageData, 0, 0);                                
+                    console.timeEnd('render');
+                    
+                    // We are only allocating memory on the first run, which leads to faster runs on the subsequent calls,
+                    // but that still doesn't make it faster than JavaScript.
+                    //setTimeout(render, 0);
+                }
+                render();                    
+            });              
+            
+            
+            
+        </script>
+    </body>
+</html>

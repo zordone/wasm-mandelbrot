@@ -75,3 +75,24 @@ Time spent: 130 ms (with -O3)
 `./mandelbrot`
 
 Time spent: 125 ms (with -O3)
+
+
+### 04-cpp-bind
+This is also in C++, but using Emscripten's bind macro and types to `return` the results to JavaScript.
+
+This one also has some optimizations I tried out: 
+
+- inline-ing functions, 
+- declaring the variables outside the heavy loops,
+- added some compiler flags to encourage more optimization.
+
+Sadly, that doesn't make much of a difference.
+
+You can recompile `mandelbrot.cpp` to generate `mandelbrot.wasm` and `mandelbrot.js` using:
+
+`em++ --bind mandelbrot.cpp -o mandelbrot.js -s WASM=1 -O2 --llvm-opts 3`
+
+Time spent: 237 ms (first run), 134 ms (subsequent calls)
+
+#### No main method here. 
+Emscripten's macros and types are not available, so it can't be compiled to a standalone executable.
