@@ -3,11 +3,10 @@ WebAssembly Mandelbrot POCs
 
 
 ## Install
-First, you need to install the dependencies for dealing with WebAssembly.
-
-http://webassembly.org/getting-started/developers-guide/
+First, you need to install the dependencies for dealing with WebAssembly, compiling and whatnot: [instructions here.](http://webassembly.org/getting-started/developers-guide/)
 
 Notes:
+
 - max open file issue
   - https://superuser.com/a/303058  
   - `sudo launchctl limit maxfiles 1000000 1000000`
@@ -24,8 +23,7 @@ Notes:
   - Do this in a different Terminal session, since you'll need the activated Emscripten, to compile wasm.
   - `cd <PROJECT-FOLDER>`
   - `http-server` (but you can use Apache or anything)
-3. Open the `fractal.html` from one of the subfolders
-  - http://localhost:8080/01-javascript/fractal.html
+3. Open `index.html` and follow the links to see the different implementations: [http://localhost:8080/](http://localhost:8080/)
 4. Check the console for the measurement or potential errors
 
 
@@ -106,5 +104,9 @@ Of course I know that the context switching and the memory copying brings some o
 
 - The context switching overhead should be neglidgeable compared to the speed win of native code. 
 - I excluded the copying time from my measurements, so that's not what makes it slower than expected.
+
+The similar speed of the native test runs means that the JavaScript baseline version is already running at close to native speed (at least in this example), which is a huge compliment to the modern JavaScript engines.
+
+Measured in Chrome and Firefox, on MacOS. The results are very similar.
 
 That's all I have so far.
