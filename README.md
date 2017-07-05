@@ -96,3 +96,15 @@ Time spent: 237 ms (first run), 134 ms (subsequent calls)
 
 #### No main method here. 
 Emscripten's macros and types are not available, so it can't be compiled to a standalone executable.
+
+
+## Conclusion
+
+WebAssembly should be much faster that JavaScript, even in its "infant" state, but I still couldn't realize that. I can't even make it run at the same speed as JavaScript. 
+
+Of course I know that the context switching and the memory copying brings some overhead to a WASM solution, but:
+
+- The context switching overhead should be neglidgeable compared to the speed win of native code. 
+- I excluded the copying time from my measurements, so that's not what makes it slower than expected.
+
+That's all I have so far.
