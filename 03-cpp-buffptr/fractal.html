@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Fractal Test</title>        
+        <style>
+            body {
+                background-color: gray;
+            }
+            canvas {
+                border: 1px solid red;
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="plot" width="1250" height="800"></canvas>
+        <!-- 
+            Parameters
+            If you change width or height, you'll need to update some of the C/C++ sources too, 
+            since some of the the memory allocation code is hardcoded at the moment. 
+        -->
+        <script>
+            const WIDTH = 1250,
+                  HEIGHT = 800,
+                  ITERATIONS = 120,
+                  LIMIT = 10,                   
+                  ZOOM = 2000.0,
+                  PAN_X = 1.4,
+                  PAN_Y = 0.55;               
+        </script>
+        
+        <!-- The Emscripten generated JavaScript wrapper for out WASM module -->
+        <script src="mandelbrot.js"></script>
+                
+        <!-- C++ version with its own allocation made accessible from JavaScript  -->
+        <script>
+            Module._main = function() {                
+                const ctx = document.getElementById('plot').getContext('2d'),
+                  ctxImageData = ctx.getImageData(0,0, WIDTH, HEIGHT);                        
+                                
+                // wasm exports (name, return type, argument types)
+                const wasmRender = Module.cwrap('render', 'void', ['number', 'number', 'number', 'number', 'number', 'number', 'number']); 
+                const wasmBufferRef = Module.cwrap('buffer_ref', 'number', []); 
+                
+                // wasm side buffer
+                const buffer = new Uint8ClampedArray(Module.wasmMemory.buffer, wasmBufferRef(), WIDTH * HEIGHT * 4);
+                
+                // render
+                function render() {
+                    console.time('render');
+                    const res = wasmRender(WIDTH, HEIGHT, ITERATIONS, LIMIT, ZOOM, PAN_X, PAN_Y);                
+                    console.timeEnd('render');                                
+                    ctxImageData.data.set(buffer);
+                    ctx.putImageData(ctxImageData, 0, 0);                
+                }
+                render();                
+            };                  
+        </script>
+    </body>
+</html>

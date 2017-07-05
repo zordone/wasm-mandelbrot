@@ -58,3 +58,20 @@ Time spent: 147 ms (with -O3)
 Time spent: 127 ms (with -O3)
 
 So, the native code is not much faster either. That makes me belive that WebAssembly isn't unexpectedly slow, rather JavaScript is unexpectedly fast.
+
+
+### 03-cpp-buffptr
+This is the same thing, just written in C++.
+You can recompile `mandelbrot.cpp` to generate `mandelbrot.wasm` and `mandelbrot.js` using:
+
+`em++ mandelbrot.cpp -o mandelbrot.js -s WASM=1 -s TOTAL_MEMORY=67108864 -s EXPORTED_FUNCTIONS="['_render','_buffer_ref']"`
+
+Time spent: 130 ms (with -O3)
+
+#### I've included a main method in this C++ code, so you can run and measure it natively:
+
+`g++ -std=c++0x mandelbrot.cpp -o mandelbrot -O3`
+
+`./mandelbrot`
+
+Time spent: 125 ms (with -O3)
