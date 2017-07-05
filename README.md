@@ -37,3 +37,24 @@ There are multiple way of doing this. Each subfolder contains a different soluti
 This is the JavaScript version without using WebAssembly. 
 
 Time spent: 135 ms
+
+
+### 02-c-buffptr
+This is the C version, allocating its own buffer and making it accessible from JavaScript.
+You can recompile `mandelbrot.c` to generate `mandelbrot.wasm` and `mandelbrot.js` using:
+
+`emcc mandelbrot.c -o mandelbrot.js -s WASM=1 -s TOTAL_MEMORY=67108864 -s EXPORTED_FUNCTIONS="['_render','_buffer_ref']"`
+
+You can try different compiler optimization settings, by appending standard compiler flags, like `-O3` (that's a capital o letter there).
+
+Time spent: 147 ms (with -O3)
+
+#### I've included a main method in the C code, so you can run and measure it natively:
+
+`gcc mandelbrot.c -o mandelbrot -O3`
+
+`./mandelbrot`
+
+Time spent: 127 ms (with -O3)
+
+So, the native code is not much faster either. That makes me belive that WebAssembly isn't unexpectedly slow, rather JavaScript is unexpectedly fast.
