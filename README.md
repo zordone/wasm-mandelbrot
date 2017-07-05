@@ -100,7 +100,7 @@ Emscripten's macros and types are not available, so it can't be compiled to a st
 
 WebAssembly should be much faster that JavaScript, even in its "infant" state, but I still couldn't realize that. I can't even make it run at the same speed as JavaScript. 
 
-Of course I know that the context switching and the memory copying brings some overhead to a WASM solution, but:
+I know that the context switching and the memory copying brings some overhead to a WASM solution, but:
 
 - The context switching overhead should be neglidgeable compared to the speed win of native code. 
 - I excluded the copying time from my measurements, so that's not what makes it slower than expected.
@@ -108,5 +108,7 @@ Of course I know that the context switching and the memory copying brings some o
 The similar speed of the native test runs means that the JavaScript baseline version is already running at close to native speed (at least in this example), which is a huge compliment to the modern JavaScript engines.
 
 Measured in Chrome and Firefox, on MacOS. The results are very similar.
+
+I could use threads or SIMD on the C/C++ side, to make it much faster, but the whole point of this excercise was to compare the same algorithm we can use on the JavaScript side.
 
 That's all I have so far.
