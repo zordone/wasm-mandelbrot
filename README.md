@@ -1,19 +1,19 @@
 # wasm-mandelbrot
-WebAssembly Mandelbrot POCs
+Mandelbrot set calculation in pure JavaScript and with WebAssembly to compare speed.
 
 
 ## Install
 First, you need to install the dependencies for dealing with WebAssembly, compiling and whatnot: [instructions here.](http://webassembly.org/getting-started/developers-guide/)
 
-Notes:
+Potential issues:
 
-- max open file issue
+- Max open file issue
   - https://superuser.com/a/303058  
   - `sudo launchctl limit maxfiles 1000000 1000000`
-- missing folder
+- Missing folder
   - emsdk/clang/fastcomp/src - no such file or directory  
   - make sure you installed cmake and it's available on the PATH
-- missing privileges for folders
+- Missing privileges for folders
   - `sudo chown -R $(whoami) /usr/local/opt`
   
 ## Run
@@ -27,8 +27,8 @@ Notes:
 4. Check the console for the measurement or potential errors
 
 
-## Subfoldres
-There are multiple way of doing this. Each subfolder contains a different solution. 
+## Subfolders
+There are multiple way of doing this. Each subfolder contains a different solution. The folders contain the compiled wasm files, but if you you change something in the C/C++ code (or you're on a different platform), you'll need to recompile. See below.
 
 
 ### 01-javascript
@@ -41,7 +41,7 @@ Time spent: 135 ms
 This is the C version, allocating its own buffer and making it accessible from JavaScript.
 You can recompile `mandelbrot.c` to generate `mandelbrot.wasm` and `mandelbrot.js` using:
 
-`emcc mandelbrot.c -o mandelbrot.js -s WASM=1 -s TOTAL_MEMORY=67108864 -s EXPORTED_FUNCTIONS="['_render','_buffer_ref']"`
+`emcc mandelbrot.c -o mandelbrot.js -s WASM=1 -s TOTAL_MEMORY=67108864 -s EXPORTED_FUNCTIONS="['_render','_buffer_ref']" -O3`
 
 You can try different compiler optimization settings, by appending standard compiler flags, like `-O3` (that's a capital o letter there).
 
@@ -62,7 +62,7 @@ So, the native code is not much faster either. That makes me belive that WebAsse
 This is the same thing, just written in C++.
 You can recompile `mandelbrot.cpp` to generate `mandelbrot.wasm` and `mandelbrot.js` using:
 
-`em++ mandelbrot.cpp -o mandelbrot.js -s WASM=1 -s TOTAL_MEMORY=67108864 -s EXPORTED_FUNCTIONS="['_render','_buffer_ref']"`
+`em++ mandelbrot.cpp -o mandelbrot.js -s WASM=1 -s TOTAL_MEMORY=67108864 -s EXPORTED_FUNCTIONS="['_render','_buffer_ref']" -O3`
 
 Time spent: 130 ms (with -O3)
 
@@ -88,12 +88,12 @@ Sadly, that doesn't make much of a difference.
 
 You can recompile `mandelbrot.cpp` to generate `mandelbrot.wasm` and `mandelbrot.js` using:
 
-`em++ --bind mandelbrot.cpp -o mandelbrot.js -s WASM=1 -O2 --llvm-opts 3`
+`em++ --bind mandelbrot.cpp -o mandelbrot.js -s WASM=1 -O3 --llvm-opts 3`
 
 Time spent: 237 ms (first run), 134 ms (subsequent calls)
 
 #### No main method here. 
-Emscripten's macros and types are not available, so it can't be compiled to a standalone executable.
+It's using Emscripten's macros and types, I couldn't compile it to a standalone executable. But the main algorithm is the same anyway.
 
 
 ## Conclusion
@@ -109,6 +109,6 @@ The similar speed of the native test runs means that the JavaScript baseline ver
 
 Measured in Chrome and Firefox, on MacOS. The results are very similar.
 
-I could use threads or SIMD on the C/C++ side, to make it much faster, but the whole point of this excercise was to compare the same algorithm we can use on the JavaScript side.
+I could use threads or SIMD on the C/C++ side to make it much faster, but the whole point of this excercise was to compare the same algorithm we can use on the JavaScript side.
 
 That's all I have so far.
